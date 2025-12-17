@@ -1,7 +1,7 @@
 <template>
   <header class="header">
     <div class="header__inner">
-      <div class="header__left">
+      <div class="header__left" @click="scrollToTop">
         <div class="header__name">История нейросетей в России</div>
         <div class="header__subtitle">Проект по истории России</div>
       </div>
@@ -35,7 +35,12 @@ const tabs = [
   { id: 'modern',      label: 'Современность' },
   { id: 'people',      label: 'Ключевые люди' }
 ]
+
+const scrollToTop = () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+}
 </script>
+
 
 <style scoped>
 .header {
@@ -62,12 +67,13 @@ const tabs = [
 }
 
 .header__name {
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .header__subtitle {
-  font-size: 11px;
+  font-size: 12px;
   color: #9ca3af;
 }
 
@@ -103,10 +109,22 @@ const tabs = [
 @media (max-width: 768px) {
   .header__inner {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;    /* растянуть на всю ширину */
+    gap: 6px;
   }
+
   .header__name {
-    font-size: 15px;
+    font-size: 18px;
+  }
+
+  .nav {
+    justify-content: center; /* центрируем вкладки */
+    width: 100%;
+  }
+
+  .nav__btn {
+    flex: 1 1 45%;           /* две кнопки в ряд, по ширине */
+    text-align: center;
   }
 }
 </style>

@@ -151,6 +151,17 @@ body {
   padding: 24px 32px 40px;
   box-sizing: border-box;
 }
+@media (max-width: 900px) {
+  .layout {
+    grid-template-columns: 1fr;
+    padding: 12px 8px 20px;    /* было 16px 12px 24px */
+  }
+
+  .block {
+    padding: 20px 12px;        /* было 24px 16px */
+    min-height: auto;
+  }
+}
 
 @media (max-width: 900px) {
   .timeline {
@@ -267,13 +278,6 @@ body {
   min-height: 70vh;
 }
 
-@media (max-width: 900px) {
-  .block {
-    padding: 24px 16px;
-    min-height: auto;
-  }
-}
-
 .block__title {
   font-size: 24px;
   margin: 0 0 8px;
@@ -284,4 +288,14 @@ body {
   color: #9ca3af;
   font-size: 14px;
 }
+
+.header__left {
+  min-width: 0;
+  cursor: pointer;          /* указатель-рука */
+}
+
+.header__left:hover .header__name {
+  text-decoration: underline;
+}
+
 </style>
