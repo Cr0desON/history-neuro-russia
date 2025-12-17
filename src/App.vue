@@ -62,11 +62,12 @@ onBeforeUnmount(() => {
 })
 
 const timelineMarks = [
-  { id: 'section-soviet', label: '1950–1991', mapTo: 'soviet' },
-  { id: 'section-transition', label: '1991–2019', mapTo: 'transition' },
-  { id: 'section-modern', label: '2017–2025', mapTo: 'modern' },
-  { id: 'section-people', label: 'Личности', mapTo: 'people' }
+  { id: 'section-soviet', label: '1950–1991', mapTo: 'soviet', position: 40 },
+  { id: 'section-transition', label: '1991–2019', mapTo: 'transition', position: 65 },
+  { id: 'section-modern', label: '2017–2025', mapTo: 'modern', position: 88 }
+  // { id: 'section-people', label: 'Личности', mapTo: 'people', position: 95 }
 ]
+
 
 </script>
 
@@ -83,13 +84,15 @@ const timelineMarks = [
               :key="item.id"
               class="timeline__item"
               :class="{ 'timeline__item--active': activeTab === item.mapTo }"
+              :style="{ top: item.position + '%' }"
               @click="scrollToSection(item.id)"
           >
-            <span class="timeline__dot"></span>
+          <span class="timeline__dot"></span>
             <span class="timeline__year">{{ item.label }}</span>
           </li>
         </ul>
       </aside>
+
 
       <section class="content">
         <section id="section-soviet" class="block">
@@ -171,18 +174,84 @@ body {
   }
 }
 
-/* Левая колонка с линией времени */
+/* Левая колонка с линией времени – десктоп */
 .timeline {
   position: sticky;
-  top: 70px;
+  top: 80px;
   align-self: flex-start;
-  height: calc(100vh - 90px);
-  display: flex;
-  flex-direction: column;
-  justify-content: stretch;
-  position: relative;
+  width: 150px;
+  height: calc(93vh - 80px); /* Линия примерно на одну видимую страницу */
 }
 
+/* Вертикальная линия */
+.timeline__line {
+  position: absolute;
+  left: 24px;
+  top: 0;
+  bottom: 0;
+  width: 4px; /* было 2px – линия толще */
+  background: linear-gradient(
+      to bottom,
+      rgba(59, 130, 246, 0.15),
+      rgba(59, 130, 246, 0.95)
+  );
+}
+
+.timeline__line::after {
+  content: '';
+  position: absolute;
+  bottom: -14px;           /* опускаем чуть ниже линии */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 15px solid transparent;
+  border-right: 15px solid transparent;
+  border-top: 25px solid rgba(59, 130, 246); /* крупнее стрелка */
+}
+
+/* Список для семантики, позиционирование делаем на самих пунктах */
+.timeline__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Базовый стиль точки */
+.timeline__item {
+  position: absolute;
+  left: 0;
+  padding-left: 36px;
+  cursor: pointer;
+}
+
+.timeline__dot {
+  position: absolute;
+  left: 19px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 11px;
+  height: 11px;
+  border-radius: 999px;
+}
+
+.timeline__year {
+  font-size: 15px;
+  color: #9ca3af;
+}
+
+/* Активная точка */
+.timeline__item--active .timeline__dot {
+  background: #22c55e;
+  box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.35);
+}
+
+.timeline__item--active .timeline__year {
+  color: #e5e7eb;
+  font-weight: 600;
+}
+
+/* На мобильных линию скрываем – там пока без таймлайна */
 @media (max-width: 900px) {
   .timeline {
     display: none;
@@ -196,7 +265,6 @@ body {
   display: none;
 }
 
-/* МОБИЛА: горизонтальная стрелка */
 @media (max-width: 900px) {
   .timeline.desktop {
     display: none;
