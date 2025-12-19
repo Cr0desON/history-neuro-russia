@@ -13,6 +13,42 @@ const sections = {
   people: 'section-people'
 }
 
+// все изображения людей
+const peopleImages = import.meta.glob(
+    '/src/assets/photos/people/*.{png,jpg,jpeg,webp}',
+    {
+      eager: true,
+      import: 'default'
+    }
+)
+
+// russianFileBase = 'АлексейИвахненко', 'МихаилБонгард' и т.п.
+function getPersonImage(russianFileBase) {
+  const entries = Object.entries(peopleImages)
+  const entry = entries.find(([path]) =>
+      path.includes(`/photos/people/${russianFileBase}.`)
+  )
+  return entry ? entry[1] : ''
+}
+
+// все изображения для карточек ИИ
+const aiImages = import.meta.glob(
+    '/src/assets/photos/ai/*.{png,jpg,jpeg,webp,gif}',
+    {
+      eager: true,
+      import: 'default'
+    }
+)
+
+// russianFileBase = 'АлгоритмКОРА', 'Альфа', 'БЭСМ-1' и т.п.
+function getAiImage(russianFileBase) {
+  const entry = Object.entries(aiImages).find(([path]) =>
+      path.includes(`/photos/ai/${russianFileBase}.`)
+  )
+  return entry ? entry[1] : ''
+}
+
+
 function scrollToElement(id) {
   const el = document.getElementById(id)
   if (el) {
@@ -245,20 +281,28 @@ function isTimelineItemActive(item) {
             </div>
 
             <div class="block__photo">
-              <div class="block__photo-placeholder">Фото 1</div>
+              <div class="block__photo-inner">
+                <img
+                    :src="getAiImage('рождение')"
+                    alt="Рождение советской информатики (1948)"
+                    class="block-photo-img"
+                />
+              </div>
               <p class="block__photo-caption">Рождение советской информатики (1948)</p>
             </div>
           </div>
         </section>
 
-        <!-- Карточка 2 — 1950 МЭСМ -->
+        <!-- Карточка 2 — МЭСМ -->
         <section id="card-1950-mesm" class="block">
           <div class="block__row block__row--reverse">
             <div class="block__text">
               <h2 class="block__title">1950 — первые советские ЭВМ: МЭСМ</h2>
               <p>
                 МЭСМ (Малая электронная счётная машина) разработана
-                <button class="person-link" @click="scrollToPerson('person-lebedev')">Сергеем Алексеевичем Лебедевым</button>
+                <button class="person-link" @click="scrollToPerson('person-lebedev')">
+                  Сергеем Алексеевичем Лебедевым
+                </button>
                 в Киевском институте электротехники АН УССР и стала первой советской ЭВМ и одной из первых в мире.
               </p>
               <ul>
@@ -273,36 +317,49 @@ function isTimelineItemActive(item) {
             </div>
 
             <div class="block__photo">
-              <div class="block__photo-placeholder">Фото 2</div>
+              <div class="block__photo-inner">
+                <img
+                    :src="getAiImage('МЭСМ')"
+                    alt="МЭСМ"
+                    class="block-photo-img"
+                />
+              </div>
               <p class="block__photo-caption">МЭСМ</p>
             </div>
           </div>
         </section>
 
-        <!-- Карточка 4 — М-1 -->
-        <section id="card-1950-m1" class="block">
+        <!-- Карточка 3 — АЦВМ М‑1 -->
+        <section id="card-1952-m1" class="block">
           <div class="block__row">
             <div class="block__text">
               <h2 class="block__title">АЦВМ М‑1 — первое поколение отечественных компьютеров</h2>
               <p>
                 АЦВМ М‑1 разработана
                 <button class="person-link" @click="scrollToPerson('person-brook')">И.&nbsp;С. Бруком</button>
-                в Лаборатории электросистем ЭНИН АН СССР в Москве. Работы начались в октябре 1950 года, а ввод в
-                эксплуатацию состоялся в январе 1952 года.
+                в Лаборатории электросистем ЭНИН АН СССР в Москве. Работы начались в октябре 1950 года,
+                а ввод в эксплуатацию состоялся в январе 1952 года.
               </p>
               <p>
                 М‑1 стала первой в мире ЭВМ, логические схемы которой были построены на полупроводниковых приборах
-                (купроксные выпрямители вместо радиоламп). По производительности машина была сравнима с МЭСМ и
-                использовалась для расчётов в космических программах и ядерных исследованиях.
+                (купроокисные выпрямители вместо радиоламп). По производительности машина была сравнима с МЭСМ
+                и использовалась для расчётов в космических программах и ядерных исследованиях.
               </p>
             </div>
 
             <div class="block__photo">
-              <div class="block__photo-placeholder">Фото 3</div>
+              <div class="block__photo-inner">
+                <img
+                    :src="getAiImage('М-1')"
+                    alt="М-1"
+                    class="block-photo-img"
+                />
+              </div>
               <p class="block__photo-caption">АЦВМ М‑1</p>
             </div>
           </div>
         </section>
+
 
         <!-- Карточка 5 — 1952 М-2 -->
         <section id="card-1952-m2" class="block">
@@ -322,7 +379,13 @@ function isTimelineItemActive(item) {
             </div>
 
             <div class="block__photo">
-              <div class="block__photo-placeholder">Фото 4</div>
+              <div class="block__photo-inner">
+                <img
+                    :src="getAiImage('М-2')"
+                    alt="М-2"
+                    class="block-photo-img"
+                />
+              </div>
               <p class="block__photo-caption">М‑2</p>
             </div>
           </div>
@@ -350,7 +413,13 @@ function isTimelineItemActive(item) {
             </div>
 
             <div class="block__photo">
-              <div class="block__photo-placeholder">Фото 5</div>
+              <div class="block__photo-inner">
+                <img
+                    :src="getAiImage('БЭСМ-1')"
+                    alt="БЭСМ-1"
+                    class="block-photo-img"
+                />
+              </div>
               <p class="block__photo-caption">БЭСМ‑1</p>
             </div>
           </div>
@@ -374,7 +443,13 @@ function isTimelineItemActive(item) {
             </div>
 
             <div class="block__photo">
-              <div class="block__photo-placeholder">Фото 6</div>
+              <div class="block__photo-inner">
+                <img
+                    :src="getAiImage('М-20')"
+                    alt="М-20"
+                    class="block-photo-img"
+                />
+              </div>
               <p class="block__photo-caption">М‑20</p>
             </div>
           </div>
@@ -398,7 +473,13 @@ function isTimelineItemActive(item) {
             </div>
 
             <div class="block__photo">
-              <div class="block__photo-placeholder">Фото 7</div>
+              <div class="block__photo-inner">
+                <img
+                    :src="getAiImage('Альфа')"
+                    alt="Альфа"
+                    class="block-photo-img"
+                />
+              </div>
               <p class="block__photo-caption">Машина «Альфа»</p>
             </div>
           </div>
@@ -421,7 +502,13 @@ function isTimelineItemActive(item) {
             </div>
 
             <div class="block__photo">
-              <div class="block__photo-placeholder">Фото 8</div>
+              <div class="block__photo-inner">
+                <img
+                    :src="getAiImage('Бонгард')"
+                    alt="Бонгард"
+                    class="block-photo-img"
+                />
+              </div>
               <p class="block__photo-caption">Программы Бонгарда</p>
             </div>
           </div>
@@ -448,7 +535,13 @@ function isTimelineItemActive(item) {
             </div>
 
             <div class="block__photo">
-              <div class="block__photo-placeholder">Фото 9</div>
+              <div class="block__photo-inner">
+                <img
+                    :src="getAiImage('АлгоритмКОРа')"
+                    alt="АлгоритмКОРа"
+                    class="block-photo-img"
+                />
+              </div>
               <p class="block__photo-caption">Алгоритм «КОРА»</p>
             </div>
           </div>
@@ -471,7 +564,13 @@ function isTimelineItemActive(item) {
             </div>
 
             <div class="block__photo">
-              <div class="block__photo-placeholder">Фото 10</div>
+              <div class="block__photo-inner">
+                <img
+                    :src="getAiImage('Научная школа')"
+                    alt="Научная школа"
+                    class="block-photo-img"
+                />
+              </div>
               <p class="block__photo-caption">Школа в Комарово</p>
             </div>
           </div>
@@ -494,11 +593,6 @@ function isTimelineItemActive(item) {
                 синтез функциональных схем ЭВМ.
               </p>
             </div>
-
-            <div class="block__photo">
-              <div class="block__photo-placeholder">Фото 11</div>
-              <p class="block__photo-caption">Виктор Глушков</p>
-            </div>
           </div>
         </section>
 
@@ -519,7 +613,13 @@ function isTimelineItemActive(item) {
             </div>
 
             <div class="block__photo">
-              <div class="block__photo-placeholder">Фото 12</div>
+              <div class="block__photo-inner">
+                <img
+                    :src="getAiImage('Ситуационноеупр')"
+                    alt="Ситуационноеупр"
+                    class="block-photo-img"
+                />
+              </div>
               <p class="block__photo-caption">Ситуационное управление</p>
             </div>
           </div>
@@ -542,8 +642,14 @@ function isTimelineItemActive(item) {
             </div>
 
             <div class="block__photo">
-              <div class="block__photo-placeholder">Фото 13</div>
-              <p class="block__photo-caption">Александр Галушкин</p>
+              <div class="block__photo-inner">
+                <img
+                    :src="getAiImage('Многослойныесети')"
+                    alt="Многослойныесети"
+                    class="block-photo-img"
+                />
+              </div>
+              <p class="block__photo-caption">Многослойные сети</p>
             </div>
           </div>
         </section>
@@ -569,11 +675,6 @@ function isTimelineItemActive(item) {
                 обратного распространения ошибки на Западе.
               </p>
             </div>
-
-            <div class="block__photo">
-              <div class="block__photo-placeholder">Фото 14</div>
-              <p class="block__photo-caption">Монография Галушкина</p>
-            </div>
           </div>
         </section>
 
@@ -592,11 +693,6 @@ function isTimelineItemActive(item) {
                 Нейросети применялись в задачах моделирования и прогнозирования, распознавания образов в экологии
                 и гидрометеорологии, а также в экономических приложениях.
               </p>
-            </div>
-
-            <div class="block__photo">
-              <div class="block__photo-placeholder">Фото 15</div>
-              <p class="block__photo-caption">Нейросети 1980‑х</p>
             </div>
           </div>
         </section>
@@ -622,33 +718,18 @@ function isTimelineItemActive(item) {
             </div>
 
             <div class="block__photo">
-              <div class="block__photo-placeholder">Фото 16</div>
+              <div class="block__photo-inner">
+                <img
+                    :src="getAiImage('НейроКомпьютеры')"
+                    alt="НейроКомпьютеры"
+                    class="block-photo-img"
+                />
+              </div>
               <p class="block__photo-caption">Журнал «Нейрокомпьютер»</p>
             </div>
           </div>
         </section>
-
-        <!-- Карточка 18 — 1991–2000 -->
-        <section id="card-1991-2000-winter" class="block">
-          <div class="block__row">
-            <div class="block__text">
-              <h2 class="block__title">1991–2000 — вторая зима ИИ и экономический кризис</h2>
-              <p>
-                Распад СССР привёл к резкому сокращению финансирования и тяжёлому экономическому кризису 1990‑х годов.
-                Многие исследователи вынуждены были эмигрировать, а работы по ИИ и нейросетям замедлились.
-              </p>
-              <p>
-                При этом сохранилось ядро учёных, продолжавших исследования, началось международное сотрудничество
-                и расширился доступ к западным публикациям.
-              </p>
-            </div>
-
-            <div class="block__photo">
-              <div class="block__photo-placeholder">Фото 17</div>
-              <p class="block__photo-caption">Вторая зима ИИ</p>
-            </div>
-          </div>
-        </section>
+        
 
         <!-- Карточка 19 — 2000–2010 -->
         <section id="card-2000-2010-recovery" class="block">
@@ -666,7 +747,13 @@ function isTimelineItemActive(item) {
             </div>
 
             <div class="block__photo">
-              <div class="block__photo-placeholder">Фото 18</div>
+              <div class="block__photo-inner">
+                <img
+                    :src="getAiImage('ИсследованиеИИ')"
+                    alt="ИсследованиеИИ"
+                    class="block-photo-img"
+                />
+              </div>
               <p class="block__photo-caption">Восстановление исследований</p>
             </div>
           </div>
@@ -689,7 +776,13 @@ function isTimelineItemActive(item) {
             </div>
 
             <div class="block__photo">
-              <div class="block__photo-placeholder">Фото 19</div>
+              <div class="block__photo-inner">
+                <img
+                    :src="getAiImage('Диплерн')"
+                    alt="Диплерн"
+                    class="block-photo-img"
+                />
+              </div>
               <p class="block__photo-caption">Переход к deep learning</p>
             </div>
           </div>
@@ -714,7 +807,13 @@ function isTimelineItemActive(item) {
             </div>
 
             <div class="block__photo">
-              <div class="block__photo-placeholder">Фото 20</div>
+              <div class="block__photo-inner">
+                <img
+                    :src="getAiImage('алиса')"
+                    alt="алиса"
+                    class="block-photo-img"
+                />
+              </div>
               <p class="block__photo-caption">Алиса</p>
             </div>
           </div>
@@ -734,11 +833,6 @@ function isTimelineItemActive(item) {
                 высокопроизводительного сектора, а также меры поддержки исследований, кадров и инфраструктуры.
               </p>
             </div>
-
-            <div class="block__photo">
-              <div class="block__photo-placeholder">Фото 21</div>
-              <p class="block__photo-caption">Стратегия развития ИИ</p>
-            </div>
           </div>
         </section>
 
@@ -757,7 +851,13 @@ function isTimelineItemActive(item) {
             </div>
 
             <div class="block__photo">
-              <div class="block__photo-placeholder">Фото 22</div>
+              <div class="block__photo-inner">
+                <img
+                    :src="getAiImage('Наташа')"
+                    alt="Наташа"
+                    class="block-photo-img"
+                />
+              </div>
               <p class="block__photo-caption">Natasha</p>
             </div>
           </div>
@@ -775,7 +875,13 @@ function isTimelineItemActive(item) {
             </div>
 
             <div class="block__photo">
-              <div class="block__photo-placeholder">Фото 23</div>
+              <div class="block__photo-inner">
+                <img
+                    :src="getAiImage('Балабоба')"
+                    alt="Балабоба"
+                    class="block-photo-img"
+                />
+              </div>
               <p class="block__photo-caption">Балабоба</p>
             </div>
           </div>
@@ -793,7 +899,13 @@ function isTimelineItemActive(item) {
             </div>
 
             <div class="block__photo">
-              <div class="block__photo-placeholder">Фото 24</div>
+              <div class="block__photo-inner">
+                <img
+                    :src="getAiImage('ЯндексГПТ')"
+                    alt="ЯндексГПТ"
+                    class="block-photo-img"
+                />
+              </div>
               <p class="block__photo-caption">YandexGPT&nbsp;1/2</p>
             </div>
           </div>
@@ -814,7 +926,13 @@ function isTimelineItemActive(item) {
             </div>
 
             <div class="block__photo">
-              <div class="block__photo-placeholder">Фото 25</div>
+              <div class="block__photo-inner">
+                <img
+                    :src="getAiImage('ГигаКод')"
+                    alt="ГигаКод"
+                    class="block-photo-img"
+                />
+              </div>
               <p class="block__photo-caption">GigaChat</p>
             </div>
           </div>
@@ -832,7 +950,13 @@ function isTimelineItemActive(item) {
             </div>
 
             <div class="block__photo">
-              <div class="block__photo-placeholder">Фото 26</div>
+              <div class="block__photo-inner">
+                <img
+                    :src="getAiImage('нейро')"
+                    alt="нейро"
+                    class="block-photo-img"
+                />
+              </div>
               <p class="block__photo-caption">YandexGPT&nbsp;3 и «Нейро»</p>
             </div>
           </div>
@@ -850,7 +974,13 @@ function isTimelineItemActive(item) {
             </div>
 
             <div class="block__photo">
-              <div class="block__photo-placeholder">Фото 27</div>
+              <div class="block__photo-inner">
+                <img
+                    :src="getAiImage('Яндекс')"
+                    alt="Яндекс"
+                    class="block-photo-img"
+                />
+              </div>
               <p class="block__photo-caption">YandexGPT&nbsp;4</p>
             </div>
           </div>
@@ -866,7 +996,11 @@ function isTimelineItemActive(item) {
           <div class="people-grid">
             <article id="person-ivakhnenko" class="person-card">
               <div class="person-card__photo">
-                <div class="block__photo-placeholder block__photo-placeholder--person">Фото 28</div>
+                <img
+                    :src="getPersonImage('АлексейИвахненко')"
+                    alt="Алексей Ивахненко"
+                    class="person-photo-img"
+                />
               </div>
               <h3 class="person-card__name">Алексей Ивахненко</h3>
               <p class="person-card__period">1913–2007</p>
@@ -878,7 +1012,11 @@ function isTimelineItemActive(item) {
 
             <article id="person-bongard" class="person-card">
               <div class="person-card__photo">
-                <div class="block__photo-placeholder block__photo-placeholder--person">Фото 29</div>
+                <img
+                    :src="getPersonImage('МихаилБонград')"
+                    alt="Михаил Бонгард"
+                    class="person-photo-img"
+                />
               </div>
               <h3 class="person-card__name">Михаил Бонгард</h3>
               <p class="person-card__period">1916–1998</p>
@@ -890,7 +1028,11 @@ function isTimelineItemActive(item) {
 
             <article id="person-glushkov" class="person-card">
               <div class="person-card__photo">
-                <div class="block__photo-placeholder block__photo-placeholder--person">Фото 30</div>
+                <img
+                    :src="getPersonImage('ВикторГлушков')"
+                    alt="Виктор Глушков"
+                    class="person-photo-img"
+                />
               </div>
               <h3 class="person-card__name">Виктор Глушков</h3>
               <p class="person-card__period">1923–1982</p>
@@ -902,7 +1044,11 @@ function isTimelineItemActive(item) {
 
             <article id="person-pospelov" class="person-card">
               <div class="person-card__photo">
-                <div class="block__photo-placeholder block__photo-placeholder--person">Фото 31</div>
+                <img
+                    :src="getPersonImage('ДмитрийПоспелов')"
+                    alt="Дмитрий Поспелов"
+                    class="person-photo-img"
+                />
               </div>
               <h3 class="person-card__name">Дмитрий Поспелов</h3>
               <p class="person-card__period">1931–1998</p>
@@ -914,7 +1060,11 @@ function isTimelineItemActive(item) {
 
             <article id="person-galushkin" class="person-card">
               <div class="person-card__photo">
-                <div class="block__photo-placeholder block__photo-placeholder--person">Фото 32</div>
+                <img
+                    :src="getPersonImage('АлександрГалушкин')"
+                    alt="Александр Галушкин"
+                    class="person-photo-img"
+                />
               </div>
               <h3 class="person-card__name">Александр Галушкин</h3>
               <p class="person-card__period">1940–2016</p>
@@ -926,7 +1076,11 @@ function isTimelineItemActive(item) {
 
             <article id="person-lebedev" class="person-card">
               <div class="person-card__photo">
-                <div class="block__photo-placeholder block__photo-placeholder--person">Фото 33</div>
+                <img
+                    :src="getPersonImage('СергейЛебедев')"
+                    alt="Сергей Лебедев"
+                    class="person-photo-img"
+                />
               </div>
               <h3 class="person-card__name">Сергей Лебедев</h3>
               <p class="person-card__period">1902–1974</p>
@@ -937,9 +1091,13 @@ function isTimelineItemActive(item) {
 
             <article id="person-brook" class="person-card">
               <div class="person-card__photo">
-                <div class="block__photo-placeholder block__photo-placeholder--person">Фото 34</div>
+                <img
+                    :src="getPersonImage('ИсаакБрук')"
+                    alt="Исаак Брук"
+                    class="person-photo-img"
+                />
               </div>
-              <h3 class="person-card__name">Игорь Брук</h3>
+              <h3 class="person-card__name">Исаак Брук</h3>
               <p class="person-card__period">1902–1974</p>
               <p class="person-card__text">
                 Один из создателей М‑1, первого отечественного компьютера, и руководитель работ по М‑2.
@@ -1001,7 +1159,7 @@ body {
 
 .timeline__line {
   position: absolute;
-  left: 24px;
+  left: 23px;
   top: 0;
   bottom: 0;
   width: 4px;
@@ -1092,8 +1250,9 @@ body {
 }
 
 .block__title {
-  font-size: 22px;
-  margin: 0 0 12px;
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 16px;
 }
 
 .block__lead {
@@ -1104,8 +1263,9 @@ body {
 
 .block__row {
   display: flex;
-  gap: 24px;
-  align-items: flex-start;
+  align-items: center;          /* выравниваем фото и текст по центру по вертикали */
+  justify-content: space-between;
+  gap: 40px;
 }
 
 .block__row--reverse {
@@ -1113,18 +1273,65 @@ body {
 }
 
 .block__text {
-  flex: 1;
-  font-size: 14px;
-  color: #d1d5db;
+  flex: 1 1 auto;            /* текст занимает всё доступное */
+  max-width: 650px;
+  text-align: left;
+  color: #d1d5db;/* как в макете */
+}
+
+.block__text p {
+  margin-bottom: 10px;
+  line-height: 1.6;
+}
+
+
+.block__text ul {
+  margin: 8px 0 12px;
+  padding-left: 1.2rem;
+}
+
+.block__text li {
+  margin-bottom: 4px;
 }
 
 /* Фото‑слоты */
 .block__photo {
-  width: 220px;
-  flex-shrink: 0;
+  flex: 0 0 280px;              /* одинаковая ширина */
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+.block-photo-img {
+  width: 100%;
+  flex: 1 1 auto;
+  object-fit: cover;         /* как у персон: обрезаем лишнее, не тянем */
+  display: block;
+}
+
+.block__photo-caption {
+  margin-top: 6px;
+  font-size: 12px;
+  color: #9ca3af;
+  text-align: center;
+}
+
+.block__photo-inner {
+  width: 100%;
+  aspect-ratio: 4 / 3;          /* все картинки одной пропорции */
+  border-radius: 20px;
+  overflow: hidden;
+  background: #020617;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.block-photo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;            /* обрезаем, но не тянем */
+  display: block;
 }
 
 .block__photo-placeholder {
@@ -1176,16 +1383,28 @@ body {
 }
 
 .person-card {
-  padding: 16px;
-  border-radius: 14px;
-  border: 1px solid rgba(148, 163, 184, 0.35);
-  background: rgba(15, 23, 42, 0.9);
-  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.7);
-  font-size: 13px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
+/* Контейнер под фото человека */
 .person-card__photo {
+  width: 100%;
+  aspect-ratio: 3 / 4;              /* портретная пропорция, можно 4/5 если хочется выше */
   margin-bottom: 10px;
+  overflow: hidden;                 /* обрезаем всё, что выходит за рамку */
+  border-radius: 18px;
+  border: 1px solid rgba(55, 65, 81, 0.9);
+  background: #020617;
+}
+
+/* Само изображение */
+.person-photo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;                /* заполняет контейнер, не растягивая, а обрезая лишнее */
+  display: block;
 }
 
 .person-card__name {
