@@ -2,8 +2,10 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import Header from './components/Header.vue'
 
-const activeTab = ref('soviet')
+const activeTab = ref('soviet')          // для Header
+const activeCardId = ref('card-1948')    // какая карточка сейчас в центре, для таймлайна
 
+// якорные секции для кнопок в Header
 const sections = {
   soviet: 'section-soviet-start',
   transition: 'section-transition-start',
@@ -27,16 +29,41 @@ function handleSelectTab(tabId) {
 // переход к человеку из текста
 function scrollToPerson(personId) {
   activeTab.value = 'people'
-  // сначала доскроллим к блоку «Ключевые личности», затем к конкретному человеку
   requestAnimationFrame(() => {
     scrollToElement('section-people')
     setTimeout(() => scrollToElement(personId), 300)
   })
 }
 
-// карта id секций, которые слушаем, -> вкладка
-const observedSectionsMap = {
-  'section-soviet-start': 'soviet',
+/*
+  Какие карточки наблюдаем, чтобы понимать:
+  - какая сейчас активна (activeCardId)
+  - какому периоду она принадлежит (чтобы обновить activeTab)
+*/
+const observedCards = [
+  // советский период
+  'card-1948',
+  'card-1950-mesm',
+  'card-1952-m2',
+  'card-1958-m20',
+  'card-1959-alpha',
+  'card-1963-glushkov',
+  'card-1974-monograph',
+  'card-1980s',
+  // переходные годы
+  'card-1992-neurocomputer',
+  'card-2010-2019-pre-deeplearning',
+  // современный период
+  'card-2017-alice',
+  'card-2019-strategy',
+  'card-2025-yandexgpt4',
+  // блок людей
+  'section-people',
+  'person-ivakhnenko'
+]
+
+// карта: id карточки -> период для Header
+const cardToTabMap = {
   'card-1948': 'soviet',
   'card-1950-mesm': 'soviet',
   'card-1950-m1': 'soviet',
@@ -53,13 +80,11 @@ const observedSectionsMap = {
   'card-1974-monograph': 'soviet',
   'card-1980s': 'soviet',
 
-  'section-transition-start': 'transition',
   'card-1992-neurocomputer': 'transition',
   'card-1991-2000-winter': 'transition',
   'card-2000-2010-recovery': 'transition',
   'card-2010-2019-pre-deeplearning': 'transition',
 
-  'section-modern-start': 'modern',
   'card-2017-alice': 'modern',
   'card-2019-strategy': 'modern',
   'card-2020-2023-natasha': 'modern',
@@ -69,7 +94,8 @@ const observedSectionsMap = {
   'card-2024-yandexgpt3-neuro': 'modern',
   'card-2025-yandexgpt4': 'modern',
 
-  'section-people': 'people'
+  'section-people': 'people',
+  'person-ivakhnenko': 'people'
 }
 
 let observer
@@ -77,23 +103,41 @@ let observer
 onMounted(() => {
   observer = new IntersectionObserver(
       (entries) => {
+        // ищем ту секцию, которая ближе всего к центру экрана
+        let bestEntry = null
+        let bestScore = -Infinity
+
         for (const entry of entries) {
           if (!entry.isIntersecting) continue
-          const id = entry.target.id
-          const newTab = observedSectionsMap[id]
-          if (newTab && newTab !== activeTab.value) {
-            activeTab.value = newTab
+          const rect = entry.target.getBoundingClientRect()
+          const viewportCenter = window.innerHeight / 2
+          const elementCenter = rect.top + rect.height / 2
+          const score = -Math.abs(viewportCenter - elementCenter) // чем ближе к центру, тем больше score
+
+          if (score > bestScore) {
+            bestScore = score
+            bestEntry = entry
           }
+        }
+
+        if (!bestEntry) return
+
+        const id = bestEntry.target.id
+        activeCardId.value = id
+
+        const newTab = cardToTabMap[id]
+        if (newTab && newTab !== activeTab.value) {
+          activeTab.value = newTab
         }
       },
       {
         root: null,
-        threshold: 0.1,
-        rootMargin: '-30% 0px -70% 0px'
+        threshold: 0.2,
+        rootMargin: '-20% 0px -20% 0px'
       }
   )
 
-  Object.keys(observedSectionsMap).forEach((id) => {
+  observedCards.forEach((id) => {
     const el = document.getElementById(id)
     if (el) observer.observe(el)
   })
@@ -103,27 +147,54 @@ onBeforeUnmount(() => {
   if (observer) observer.disconnect()
 })
 
-// точки таймлайна – только для карточек, помеченных (в таймлайн)
+/*
+  Таймлайн: небольшое число опорных дат, но активная точка теперь определяется
+  по activeCardId, а не только по activeTab.
+*/
 const timelineMarks = [
-  { id: 'card-1948', label: '1948', mapTo: 'soviet', position: 6 },
-  { id: 'card-1950-mesm', label: '1950', mapTo: 'soviet', position: 13 },
-  { id: 'card-1952-m2', label: '1952', mapTo: 'soviet', position: 20 },
-  { id: 'card-1958-m20', label: '1958', mapTo: 'soviet', position: 27 },
-  { id: 'card-1959-alpha', label: '1959', mapTo: 'soviet', position: 34 },
-  { id: 'card-1961-kora', label: '1961', mapTo: 'soviet', position: 41 },
-  { id: 'card-1963-glushkov', label: '1963', mapTo: 'soviet', position: 48 },
-  { id: 'card-1965-1980-situation', label: '1965–1980', mapTo: 'soviet', position: 55 },
-  { id: 'card-1971-1973-galushkin', label: '1971–1973', mapTo: 'soviet', position: 62 },
-  { id: 'card-1974-monograph', label: '1974', mapTo: 'soviet', position: 69 },
-  { id: 'card-1980s', label: '1980‑е', mapTo: 'soviet', position: 76 },
+  { id: 'card-1948',                    label: '1948',      mapTo: 'soviet',     position: 8 },
+  { id: 'card-1952-m2',                 label: '1952',      mapTo: 'soviet',     position: 18 },
+  { id: 'card-1959-alpha',              label: '1959',      mapTo: 'soviet',     position: 28 },
+  { id: 'card-1974-monograph',          label: '1974',      mapTo: 'soviet',     position: 38 },
+  { id: 'card-1980s',                   label: '1980‑е',    mapTo: 'soviet',     position: 48 },
 
-  { id: 'card-1992-neurocomputer', label: '1992', mapTo: 'transition', position: 83 },
-  { id: 'card-2010-2019-pre-deeplearning', label: '2010–2019', mapTo: 'transition', position: 90 },
+  { id: 'card-1992-neurocomputer',      label: '1992',      mapTo: 'transition', position: 60 },
+  { id: 'card-2010-2019-pre-deeplearning', label: '2010–2019', mapTo: 'transition', position: 70 },
 
-  { id: 'card-2017-alice', label: '2017', mapTo: 'modern', position: 97 },
-  // остальные современные годы будут сменяться по мере прокрутки, но без новых точек,
-  // чтобы не перегружать линию
+  { id: 'card-2017-alice',              label: '2017',      mapTo: 'modern',     position: 80 },
+  { id: 'card-2019-strategy',           label: '2019',      mapTo: 'modern',     position: 88 },
+  { id: 'card-2025-yandexgpt4',         label: '2025',      mapTo: 'modern',     position: 96 }
 ]
+
+// точка считается активной, если её id совпадает с активной карточкой
+function isTimelineItemActive(item) {
+  // если активная карточка есть в таймлайне – подсвечиваем её маркер
+  if (item.id === activeCardId.value) return true
+
+  const cardEl = document.getElementById(activeCardId.value)
+  if (!cardEl) return false
+
+  const cardRect = cardEl.getBoundingClientRect()
+  const cardCenter = cardRect.top + cardRect.height / 2
+
+  // ищем маркер, чей элемент ближе всего по вертикали к активной карточке
+  let closestId = null
+  let bestDist = Infinity
+
+  for (const mark of timelineMarks) {
+    const el = document.getElementById(mark.id)
+    if (!el) continue
+    const rect = el.getBoundingClientRect()
+    const center = rect.top + rect.height / 2
+    const dist = Math.abs(center - cardCenter)
+    if (dist < bestDist) {
+      bestDist = dist
+      closestId = mark.id
+    }
+  }
+
+  return item.id === closestId
+}
 </script>
 
 <template>
@@ -138,7 +209,7 @@ const timelineMarks = [
               v-for="item in timelineMarks"
               :key="item.id"
               class="timeline__item"
-              :class="{ 'timeline__item--active': activeTab === item.mapTo && item.id === item.id }"
+              :class="{ 'timeline__item--active': isTimelineItemActive(item) }"
               :style="{ top: item.position + '%' }"
               @click="scrollToElement(item.id)"
           >
@@ -147,6 +218,7 @@ const timelineMarks = [
           </li>
         </ul>
       </aside>
+
 
       <section class="content">
         <!-- ===== СОВЕТСКИЙ ПЕРИОД ===== -->
